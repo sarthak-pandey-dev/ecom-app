@@ -1,12 +1,17 @@
-package com.wishmedia.ecom_app;
+package com.wishmedia.ecom_app.controller;
 
+import com.wishmedia.ecom_app.dto.UserRequest;
+import com.wishmedia.ecom_app.dto.UserResponse;
+import com.wishmedia.ecom_app.service.UserService;
+import com.wishmedia.ecom_app.model.User;
 import lombok.AllArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 @RequestMapping ("api/users")
 @AllArgsConstructor
 @RestController
@@ -17,26 +22,27 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
-        return ResponseEntity.ok(userService.find_all());
+    public ResponseEntity<List<UserResponse>> fetchAll() {
+        return new ResponseEntity<>(userService.find_all(), HttpStatus.OK);
+
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestBody User user) {
+    public ResponseEntity<String> add(@RequestBody UserRequest user) {
         userService.addUser(user);
         return ResponseEntity.ok("Added Successfully");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> findUser(@PathVariable Long id) {
         return userService.getUser(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody User user) {
-        boolean updated = userService.updateUser(id, user);
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody UserRequest userRequest) {
+        boolean updated = userService.updateUser(id, userRequest);
         if (updated) {
             return ResponseEntity.ok("User Updated Successfully");
         }
